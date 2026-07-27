@@ -18,19 +18,27 @@ async def save_uploaded_document(file: UploadFile) -> str:
     Raises:
         HTTPException: If the upload does not have a PDF extension.
     """
-    if not file.filename or Path(file.filename).suffix.lower() != ".pdf":
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Only PDF files are allowed.",
-        )
+    try:
+        if not file.filename or Path(file.filename).suffix.lower() != ".pdf":
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Only PDF files are allowed.",
+            )
 
-    filename = Path(file.filename).name
-    destination = UPLOADS_DIRECTORY / filename
-    UPLOADS_DIRECTORY.mkdir(parents=True, exist_ok=True)
+        filename = Path(file.filename).name
+        destination = UPLOADS_DIRECTORY / filename
+        UPLOADS_DIRECTORY.mkdir(parents=True, exist_ok=True)
 
-    with destination.open("wb") as uploaded_file:
-        while chunk := await file.read(CHUNK_SIZE):
-            uploaded_file.write(chunk)
+        if destination.exists():
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="A document with this filename already exists.",
+            )
 
-    await file.close()
-    return filename
+        with destination.open("wb") as uploaded_file:
+            while chunk := await file.read(CHUNK_SIZE):
+                uploaded_file.write(chunk)
+
+        return filename
+    finally:
+        await file.close()
