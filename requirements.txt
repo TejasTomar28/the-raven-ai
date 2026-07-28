@@ -1,3 +1,5 @@
 fastapi==0.140.7
 PyMuPDF==1.28.0
 python-multipart==0.0.32
+chromadb==1.5.9
+sentence-transformers==5.6.1

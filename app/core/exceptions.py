@@ -11,3 +11,11 @@ class DuplicateDocumentError(FileExistsError):
 
 class InvalidChunkConfigurationError(ValueError):
     """Raised when chunk size and overlap cannot produce valid chunks."""
+
+
+class EmbeddingGenerationError(RuntimeError):
+    """Raised when document embeddings cannot be generated."""
+
+
+class VectorStoreError(RuntimeError):
+    """Raised when document vectors cannot be persisted."""

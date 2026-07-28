@@ -8,3 +8,9 @@ DEFAULT_CHUNK_OVERLAP = 200
 
 UPLOAD_CHUNK_SIZE = 1024 * 1024
 """Number of bytes read from an upload per write operation."""
+
+EMBEDDING_MODEL_NAME = "all-MiniLM-L6-v2"
+"""Sentence-transformers model used to generate document embeddings."""
+
+CHROMA_COLLECTION_NAME = "documents"
+"""Name of the ChromaDB collection containing document chunks."""

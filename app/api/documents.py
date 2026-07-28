@@ -4,10 +4,16 @@ from typing import Annotated
 
 from fastapi import APIRouter, File, HTTPException, UploadFile, status
 
-from app.core.exceptions import DuplicateDocumentError, InvalidDocumentError
+from app.core.exceptions import (
+    DuplicateDocumentError,
+    EmbeddingGenerationError,
+    InvalidDocumentError,
+    VectorStoreError,
+)
 from app.rag.chunker import chunk_text
 from app.rag.parser import extract_text_from_pdf
 from app.schemas.chunk import Chunk
+from app.services.document_processing_service import document_processing_service
 from app.services.document_service import save_uploaded_document
 
 
@@ -28,8 +34,8 @@ def _extract_uploaded_document_text(filename: str) -> str:
 @router.post("/upload")
 async def upload_document(
     file: Annotated[UploadFile, File(description="PDF document to upload")],
-) -> dict[str, str]:
-    """Store an uploaded PDF document and return its filename."""
+) -> dict[str, str | int]:
+    """Store, parse, embed, and index an uploaded PDF document."""
     try:
         filename = await save_uploaded_document(file)
     except InvalidDocumentError as error:
@@ -43,7 +49,19 @@ async def upload_document(
             detail=str(error),
         ) from error
 
-    return {"message": "Document uploaded successfully", "filename": filename}
+    try:
+        chunk_count = document_processing_service.process_document(filename)
+    except (EmbeddingGenerationError, VectorStoreError) as error:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Document processing failed.",
+        ) from error
+
+    return {
+        "message": "Document processed successfully",
+        "filename": filename,
+        "chunks": chunk_count,
+    }
 
 
 @router.get("/{filename}/text")

@@ -26,7 +26,7 @@ async def save_uploaded_document(file: UploadFile) -> str:
         filename = Path(file.filename).name
         destination = get_uploaded_document_path(filename)
         UPLOADS_DIRECTORY.mkdir(parents=True, exist_ok=True)
-        logger.info("Upload started: %s", filename)
+        logger.info("Uploading document: %s", filename)
 
         if destination.exists():
             raise DuplicateDocumentError("A document with this filename already exists.")
