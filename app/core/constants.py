@@ -14,3 +14,6 @@ EMBEDDING_MODEL_NAME = "all-MiniLM-L6-v2"
 
 CHROMA_COLLECTION_NAME = "documents"
 """Name of the ChromaDB collection containing document chunks."""
+
+OLLAMA_REQUEST_TIMEOUT_SECONDS = 60.0
+"""Maximum time to wait for a local Ollama generation response."""

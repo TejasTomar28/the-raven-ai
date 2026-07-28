@@ -22,7 +22,7 @@ class SearchService:
             self._vector_store = ChromaVectorStore()
         return self._vector_store
 
-    def search(self, query: str) -> SearchResponse:
+    def search(self, query: str, top_k: int = 5) -> SearchResponse:
         """Return ranked semantic matches for a natural-language query."""
         normalized_query = query.strip()
         if not normalized_query:
@@ -31,7 +31,7 @@ class SearchService:
         logger.info("Incoming search query: %s", normalized_query)
         query_embedding = self._embedding_service.embed_text(normalized_query)
         logger.info("Query embedding generated")
-        results = self.vector_store.search(query_embedding)
+        results = self.vector_store.search(query_embedding, top_k=top_k)
         logger.info("Search completed: %d results", len(results))
         return SearchResponse(query=query, results=results)
 

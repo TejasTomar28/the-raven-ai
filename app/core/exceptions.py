@@ -27,3 +27,11 @@ class InvalidSearchQueryError(ValueError):
 
 class NoIndexedDocumentsError(LookupError):
     """Raised when semantic search is requested before documents are indexed."""
+
+
+class OllamaUnavailableError(ConnectionError):
+    """Raised when the local Ollama server cannot be reached."""
+
+
+class LLMGenerationError(RuntimeError):
+    """Raised when Ollama returns an invalid or unsuccessful generation response."""
