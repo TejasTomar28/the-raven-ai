@@ -7,7 +7,6 @@ from sentence_transformers import SentenceTransformer
 from app.core.constants import EMBEDDING_MODEL_NAME
 from app.core.exceptions import EmbeddingGenerationError
 from app.core.logging import logger
-from app.schemas.chunk import Chunk
 
 
 class EmbeddingService:
@@ -43,8 +42,3 @@ class EmbeddingService:
             raise
         except Exception as error:
             raise EmbeddingGenerationError("Unable to generate a text embedding.") from error
-
-    def embed_chunks(self, chunks: list[Chunk]) -> list[list[float]]:
-        """Generate embedding vectors for a collection of document chunks."""
-        logger.info("Generating embeddings for %d chunks", len(chunks))
-        return [self.embed_text(chunk.text) for chunk in chunks]

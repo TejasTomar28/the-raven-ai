@@ -1,28 +1,23 @@
 """Service for indexing uploaded documents in the RAG pipeline."""
 
 from app.core.logging import logger
+from app.langchain.vector_store import LangChainVectorStore, get_vector_store
 from app.rag.chunker import chunk_text
-from app.rag.embedding import EmbeddingService
 from app.rag.parser import extract_text_from_pdf
-from app.rag.vector_store import ChromaVectorStore
 
 
 class DocumentProcessingService:
     """Coordinate parsing, chunking, embedding, and vector persistence."""
 
-    def __init__(
-        self,
-        embedding_service: EmbeddingService,
-    ) -> None:
-        """Create a document processing service with its RAG dependencies."""
-        self._embedding_service = embedding_service
-        self._vector_store: ChromaVectorStore | None = None
+    def __init__(self) -> None:
+        """Create a document processing service with the shared LangChain store."""
+        self._vector_store: LangChainVectorStore | None = None
 
     @property
-    def vector_store(self) -> ChromaVectorStore:
-        """Initialize the persistent vector store only when indexing is requested."""
+    def vector_store(self) -> LangChainVectorStore:
+        """Return the shared LangChain wrapper for persistent vector storage."""
         if self._vector_store is None:
-            self._vector_store = ChromaVectorStore()
+            self._vector_store = get_vector_store()
         return self._vector_store
 
     def process_document(self, filename: str) -> int:
@@ -33,13 +28,10 @@ class DocumentProcessingService:
         logger.info("Creating chunks for %s", filename)
         chunks = chunk_text(text, source_document=filename)
 
-        embeddings = self._embedding_service.embed_chunks(chunks)
-        self.vector_store.store_chunks(filename, chunks, embeddings)
+        self.vector_store.store_chunks(filename, chunks)
 
         logger.info("Processing completed for %s: %d chunks", filename, len(chunks))
         return len(chunks)
 
 
-document_processing_service = DocumentProcessingService(
-    embedding_service=EmbeddingService(),
-)
+document_processing_service = DocumentProcessingService()
