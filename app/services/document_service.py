@@ -2,12 +2,12 @@
 
 from pathlib import Path
 
-from fastapi import HTTPException, UploadFile, status
+from fastapi import UploadFile
 
-
-UPLOADS_DIRECTORY = Path(__file__).resolve().parents[2] / "uploads"
-CHUNK_SIZE = 1024 * 1024
-
+from app.core.config import UPLOADS_DIRECTORY, get_uploaded_document_path
+from app.core.constants import UPLOAD_CHUNK_SIZE
+from app.core.exceptions import DuplicateDocumentError, InvalidDocumentError
+from app.core.logging import logger
 
 async def save_uploaded_document(file: UploadFile) -> str:
     """Validate and save a PDF upload, returning its sanitized filename.
@@ -16,29 +16,26 @@ async def save_uploaded_document(file: UploadFile) -> str:
         file: The uploaded document.
 
     Raises:
-        HTTPException: If the upload does not have a PDF extension.
+        InvalidDocumentError: If the upload does not have a PDF extension.
+        DuplicateDocumentError: If the upload would overwrite a document.
     """
     try:
         if not file.filename or Path(file.filename).suffix.lower() != ".pdf":
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Only PDF files are allowed.",
-            )
+            raise InvalidDocumentError("Only PDF files are allowed.")
 
         filename = Path(file.filename).name
-        destination = UPLOADS_DIRECTORY / filename
+        destination = get_uploaded_document_path(filename)
         UPLOADS_DIRECTORY.mkdir(parents=True, exist_ok=True)
+        logger.info("Upload started: %s", filename)
 
         if destination.exists():
-            raise HTTPException(
-                status_code=status.HTTP_409_CONFLICT,
-                detail="A document with this filename already exists.",
-            )
+            raise DuplicateDocumentError("A document with this filename already exists.")
 
         with destination.open("wb") as uploaded_file:
-            while chunk := await file.read(CHUNK_SIZE):
+            while chunk := await file.read(UPLOAD_CHUNK_SIZE):
                 uploaded_file.write(chunk)
 
+        logger.info("Upload completed: %s", filename)
         return filename
     finally:
         await file.close()
