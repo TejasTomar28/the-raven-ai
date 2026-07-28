@@ -1,4 +1,4 @@
-"""Services for storing uploaded documents."""
+"""Services for storing and deleting uploaded documents."""
 
 from pathlib import Path
 
@@ -6,19 +6,17 @@ from fastapi import UploadFile
 
 from app.core.config import UPLOADS_DIRECTORY, get_uploaded_document_path
 from app.core.constants import UPLOAD_CHUNK_SIZE
-from app.core.exceptions import DuplicateDocumentError, InvalidDocumentError
+from app.core.exceptions import (
+    DocumentNotFoundError,
+    DuplicateDocumentError,
+    InvalidDocumentError,
+)
 from app.core.logging import logger
+from app.langchain.vector_store import LangChainVectorStore
+
 
 async def save_uploaded_document(file: UploadFile) -> str:
-    """Validate and save a PDF upload, returning its sanitized filename.
-
-    Args:
-        file: The uploaded document.
-
-    Raises:
-        InvalidDocumentError: If the upload does not have a PDF extension.
-        DuplicateDocumentError: If the upload would overwrite a document.
-    """
+    """Validate and save a PDF upload, returning its sanitized filename."""
     try:
         if not file.filename or Path(file.filename).suffix.lower() != ".pdf":
             raise InvalidDocumentError("Only PDF files are allowed.")
@@ -39,3 +37,14 @@ async def save_uploaded_document(file: UploadFile) -> str:
         return filename
     finally:
         await file.close()
+
+
+def delete_uploaded_document(filename: str, vector_store: LangChainVectorStore) -> None:
+    """Remove one uploaded PDF and all of its persisted vector records."""
+    document_path = get_uploaded_document_path(filename)
+    if not document_path.is_file():
+        raise DocumentNotFoundError("Document not found.")
+
+    vector_store.delete_chunks(filename)
+    document_path.unlink()
+    logger.info("Document deleted: %s", document_path.name)

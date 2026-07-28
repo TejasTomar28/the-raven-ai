@@ -1,10 +1,13 @@
 """Document API endpoints."""
 
+from datetime import datetime, timezone
 from typing import Annotated
 
 from fastapi import APIRouter, File, HTTPException, UploadFile, status
 
+from app.core.config import UPLOADS_DIRECTORY
 from app.core.exceptions import (
+    DocumentNotFoundError,
     DuplicateDocumentError,
     EmbeddingGenerationError,
     InvalidDocumentError,
@@ -15,9 +18,10 @@ from app.core.exceptions import (
 from app.rag.chunker import chunk_text
 from app.rag.parser import extract_text_from_pdf
 from app.schemas.chunk import Chunk
+from app.schemas.document import DocumentListResponse, DocumentSummary
 from app.schemas.search import SearchRequest, SearchResponse
 from app.services.document_processing_service import document_processing_service
-from app.services.document_service import save_uploaded_document
+from app.services.document_service import delete_uploaded_document, save_uploaded_document
 from app.services.search_service import search_service
 
 
@@ -33,6 +37,26 @@ def _extract_uploaded_document_text(filename: str) -> str:
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Document not found.",
         ) from None
+
+
+@router.get("", response_model=DocumentListResponse)
+def list_documents() -> DocumentListResponse:
+    """Return uploaded PDF metadata for the knowledge archive."""
+    if not UPLOADS_DIRECTORY.exists():
+        return DocumentListResponse(documents=[])
+
+    documents = [
+        DocumentSummary(
+            filename=document_path.name,
+            size_bytes=document_path.stat().st_size,
+            updated_at=datetime.fromtimestamp(document_path.stat().st_mtime, tz=timezone.utc),
+        )
+        for document_path in sorted(
+            UPLOADS_DIRECTORY.glob("*.pdf"), key=lambda path: path.name.casefold()
+        )
+        if document_path.is_file()
+    ]
+    return DocumentListResponse(documents=documents)
 
 
 @router.post("/search", response_model=SearchResponse)
@@ -88,6 +112,25 @@ async def upload_document(
         "filename": filename,
         "chunks": chunk_count,
     }
+
+
+@router.delete("/{filename}")
+def delete_document(filename: str) -> dict[str, str]:
+    """Remove an uploaded PDF and all of its indexed knowledge records."""
+    try:
+        delete_uploaded_document(filename, document_processing_service.vector_store)
+    except DocumentNotFoundError as error:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(error),
+        ) from error
+    except VectorStoreError as error:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Document deletion failed.",
+        ) from error
+
+    return {"message": "Document deleted successfully", "filename": filename}
 
 
 @router.get("/{filename}/text")

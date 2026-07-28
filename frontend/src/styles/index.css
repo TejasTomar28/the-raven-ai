@@ -1,0 +1,53 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+    color: #2e2b27;
+    background: #f5efe5;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    min-width: 320px;
+    margin: 0;
+    background: #f5efe5;
+  }
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  ::selection {
+    background: #dfb77f;
+    color: #2a2825;
+  }
+}
+
+
+.raven-scrollbar {
+  scrollbar-color: #c9a273 #f2e8da;
+  scrollbar-width: thin;
+}
+
+.raven-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.raven-scrollbar::-webkit-scrollbar-track {
+  background: #f2e8da;
+  border-radius: 999px;
+}
+
+.raven-scrollbar::-webkit-scrollbar-thumb {
+  background: #c9a273;
+  border: 2px solid #f2e8da;
+  border-radius: 999px;
+}
+
+.raven-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #b47b3d;
+}

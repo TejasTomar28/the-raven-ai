@@ -63,6 +63,17 @@ class LangChainVectorStore:
         except Exception as error:
             raise VectorStoreError("Unable to save document vectors.") from error
 
+    def delete_chunks(self, filename: str) -> None:
+        """Remove all ChromaDB records associated with one uploaded document."""
+        try:
+            existing = self._store.get(where={"filename": filename})
+            existing_ids = existing["ids"]
+            if existing_ids:
+                self._store.delete(ids=existing_ids)
+            logger.info("Removed %d vector records for %s", len(existing_ids), filename)
+        except Exception as error:
+            raise VectorStoreError("Unable to remove document vectors.") from error
+
     def as_retriever(self, top_k: int = 5):
         """Return the LangChain retriever configured for the requested result count."""
         self._ensure_indexed_documents()

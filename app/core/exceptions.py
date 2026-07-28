@@ -9,6 +9,10 @@ class DuplicateDocumentError(FileExistsError):
     """Raised when an upload would overwrite an existing document."""
 
 
+class DocumentNotFoundError(FileNotFoundError):
+    """Raised when an uploaded document cannot be found."""
+
+
 class InvalidChunkConfigurationError(ValueError):
     """Raised when chunk size and overlap cannot produce valid chunks."""
 
