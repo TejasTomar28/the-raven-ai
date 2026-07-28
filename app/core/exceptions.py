@@ -19,3 +19,11 @@ class EmbeddingGenerationError(RuntimeError):
 
 class VectorStoreError(RuntimeError):
     """Raised when document vectors cannot be persisted."""
+
+
+class InvalidSearchQueryError(ValueError):
+    """Raised when a semantic search query is empty or invalid."""
+
+
+class NoIndexedDocumentsError(LookupError):
+    """Raised when semantic search is requested before documents are indexed."""

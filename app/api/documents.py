@@ -8,13 +8,17 @@ from app.core.exceptions import (
     DuplicateDocumentError,
     EmbeddingGenerationError,
     InvalidDocumentError,
+    InvalidSearchQueryError,
+    NoIndexedDocumentsError,
     VectorStoreError,
 )
 from app.rag.chunker import chunk_text
 from app.rag.parser import extract_text_from_pdf
 from app.schemas.chunk import Chunk
+from app.schemas.search import SearchRequest, SearchResponse
 from app.services.document_processing_service import document_processing_service
 from app.services.document_service import save_uploaded_document
+from app.services.search_service import search_service
 
 
 router = APIRouter(prefix="/documents", tags=["documents"])
@@ -29,6 +33,28 @@ def _extract_uploaded_document_text(filename: str) -> str:
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Document not found.",
         ) from None
+
+
+@router.post("/search", response_model=SearchResponse)
+def search_documents(request: SearchRequest) -> SearchResponse:
+    """Return ranked document chunks that are semantically similar to a query."""
+    try:
+        return search_service.search(request.query)
+    except InvalidSearchQueryError as error:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(error),
+        ) from error
+    except NoIndexedDocumentsError as error:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(error),
+        ) from error
+    except (EmbeddingGenerationError, VectorStoreError) as error:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Semantic search failed.",
+        ) from error
 
 
 @router.post("/upload")
