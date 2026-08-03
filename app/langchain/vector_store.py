@@ -74,33 +74,31 @@ class LangChainVectorStore:
         except Exception as error:
             raise VectorStoreError("Unable to remove document vectors.") from error
 
-    def as_retriever(self, top_k: int = 5):
-        """Return the LangChain retriever configured for the requested result count."""
-        self._ensure_indexed_documents()
-        return self._store.as_retriever(search_kwargs={"k": top_k})
-
-    def search(self, query: str, top_k: int = 5) -> list[SearchResult]:
-        """Return ranked results through LangChain's Chroma similarity search."""
+    def retrieve_with_scores(self, query: str, top_k: int = 5) -> list[tuple[Document, float]]:
+        """Return ranked LangChain documents with normalized relevance scores."""
         self._ensure_indexed_documents()
         try:
             logger.info("ChromaDB search started: top_k=%d", top_k)
             matches = self._store.similarity_search_with_relevance_scores(query, k=top_k)
-            results = [
-                SearchResult(
-                    score=score,
-                    filename=str(document.metadata["filename"]),
-                    chunk_id=int(document.metadata["chunk_id"]),
-                    page_number=_page_number(document),
-                    text=document.page_content,
-                )
-                for document, score in matches
-            ]
-            logger.info("ChromaDB search retrieved %d chunks", len(results))
-            return results
+            logger.info("ChromaDB search retrieved %d chunks", len(matches))
+            return matches
         except NoIndexedDocumentsError:
             raise
         except Exception as error:
             raise VectorStoreError("Unable to search document vectors.") from error
+
+    def search(self, query: str, top_k: int = 5) -> list[SearchResult]:
+        """Return ranked search results through the shared Chroma retrieval path."""
+        return [
+            SearchResult(
+                score=score,
+                filename=str(document.metadata["filename"]),
+                chunk_id=int(document.metadata["chunk_id"]),
+                page_number=_page_number(document),
+                text=document.page_content,
+            )
+            for document, score in self.retrieve_with_scores(query, top_k)
+        ]
 
     def _ensure_indexed_documents(self) -> None:
         """Raise the domain not-found error when the shared collection is empty."""

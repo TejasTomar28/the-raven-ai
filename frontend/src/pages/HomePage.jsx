@@ -6,7 +6,7 @@ import Header from '../components/Header'
 import SourceCard from '../components/SourceCard'
 import Workflow from '../components/Workflow'
 import { useArchive } from '../hooks/useArchive'
-import { askArchiveQuestion, searchDocuments } from '../services'
+import { askArchiveQuestion } from '../services'
 
 /** Renders the connected RAVEN AI knowledge archive experience. */
 function HomePage() {
@@ -14,6 +14,7 @@ function HomePage() {
   const [question, setQuestion] = useState('')
   const [answer, setAnswer] = useState(null)
   const [sources, setSources] = useState([])
+  const [supported, setSupported] = useState(null)
   const [chatError, setChatError] = useState('')
   const [isGenerating, setIsGenerating] = useState(false)
   const [documentPendingDeletion, setDocumentPendingDeletion] = useState(null)
@@ -33,18 +34,8 @@ function HomePage() {
     try {
       const chatResponse = await askArchiveQuestion(normalizedQuestion)
       setAnswer(chatResponse.answer)
-
-      try {
-        const searchResponse = await searchDocuments(normalizedQuestion)
-        setSources(searchResponse.results)
-      } catch {
-        setSources(chatResponse.sources.map((filename) => ({
-          filename,
-          page_number: null,
-          score: null,
-          text: 'Retrieved as context for this response.',
-        })))
-      }
+      setSupported(chatResponse.supported)
+      setSources(chatResponse.sources)
     } catch (requestError) {
       setChatError(requestError.message)
     } finally {
@@ -116,13 +107,20 @@ function HomePage() {
               </div>
               {chatError && <p className="mt-3 text-xs leading-relaxed text-[#9b572e]" role="alert">{chatError}</p>}
               <div className="mt-7"><AnswerCard answer={answer} isLoading={isGenerating} /></div>
-              {sources.length > 0 && (
+              {answer && !isGenerating && (
                 <div className="mt-8">
                   <div className="mb-4 flex items-center justify-between">
                     <h3 className="font-serif text-xl text-[#3c3731]">Knowledge Sources</h3>
                     <span className="text-[0.68rem] font-medium uppercase tracking-[0.12em] text-[#9c7d5a]">{sources.length} passages</span>
                   </div>
-                  <div className="raven-scrollbar max-h-44 overflow-y-auto pr-2"><div className="grid gap-3 xl:grid-cols-3">{sources.map((source, index) => <SourceCard key={`${source.filename}-${source.chunk_id ?? index}`} source={source} />)}</div></div>
+                  {supported && sources.length > 0 ? (
+                    <div className="raven-scrollbar max-h-44 overflow-y-auto pr-2"><div className="grid gap-3 xl:grid-cols-3">{sources.map((source, index) => <SourceCard key={`${source.filename}-${source.chunk_id ?? index}`} source={source} />)}</div></div>
+                  ) : (
+                    <div className="rounded-xl border border-[#e2d7c6] bg-[#faf6ef] p-4 text-sm leading-relaxed text-[#81766a]">
+                      <p>No relevant supporting passages were found for this question.</p>
+                      <p className="mt-1">Try asking a question related to your uploaded documents.</p>
+                    </div>
+                  )}
                 </div>
               )}
             </section>

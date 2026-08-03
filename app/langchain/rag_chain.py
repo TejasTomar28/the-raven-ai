@@ -1,5 +1,7 @@
 """Reusable LangChain retrieval-and-generation chain."""
 
+from dataclasses import dataclass
+
 import httpx
 from langchain_core.documents import Document
 from langchain_core.output_parsers import StrOutputParser
@@ -14,8 +16,16 @@ from app.core.logging import logger
 from app.langchain.vector_store import get_vector_store
 
 
+@dataclass(frozen=True)
+class RAGResult:
+    """Generated answer with the full retrieved context used to produce it."""
+
+    answer: str
+    matches: list[tuple[Document, float]]
+
+
 class LangChainRAG:
-    """Retrieve relevant chunks and answer with a local LangChain ChatOllama chain."""
+    """Retrieve top chunks and answer with a local LangChain ChatOllama chain."""
 
     def __init__(self) -> None:
         """Create the reusable prompt and local Ollama answer chain."""
@@ -27,7 +37,8 @@ class LangChainRAG:
 
 Answer ONLY from the retrieved context. Never hallucinate. If the information
 is unavailable, clearly state that it is not contained in the uploaded documents.
-Keep responses concise and professional.
+Answer directly and naturally. Do not mention retrieved context or describe the
+retrieval process. Keep responses concise and professional.
 
 Retrieved context:
 {context}""",
@@ -43,12 +54,13 @@ Retrieved context:
         )
         self._answer_chain = self._prompt | self._llm | StrOutputParser()
 
-    def answer(self, question: str) -> tuple[str, list[Document]]:
-        """Retrieve top chunks once and generate a grounded answer from them."""
-        retriever = get_vector_store().as_retriever(top_k=5)
+    def answer(self, question: str) -> RAGResult:
+        """Retrieve top chunks and generate an answer from their full context."""
+        matches = get_vector_store().retrieve_with_scores(question, top_k=5)
+        documents = [document for document, _ in matches]
+        logger.info("LangChain retrieval completed: %d chunks", len(documents))
+
         try:
-            documents = retriever.invoke(question)
-            logger.info("LangChain retrieval completed: %d chunks", len(documents))
             answer = self._answer_chain.invoke(
                 {
                     "question": question,
@@ -56,7 +68,7 @@ Retrieved context:
                 }
             )
             logger.info("LangChain RAG chain completed")
-            return answer, documents
+            return RAGResult(answer=answer, matches=matches)
         except (httpx.ConnectError, httpx.ConnectTimeout) as error:
             raise OllamaUnavailableError("Ollama is unavailable.") from error
         except (httpx.TimeoutException, ResponseError) as error:

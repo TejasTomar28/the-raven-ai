@@ -22,12 +22,3 @@ export function deleteDocument(filename) {
     method: 'DELETE',
   })
 }
-
-/** Retrieves ranked passages to use as answer citations. */
-export function searchDocuments(query) {
-  return apiClient('/documents/search', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ query }),
-  })
-}
