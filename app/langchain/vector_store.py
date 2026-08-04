@@ -63,6 +63,14 @@ class LangChainVectorStore:
         except Exception as error:
             raise VectorStoreError("Unable to save document vectors.") from error
 
+    def count_chunks(self, filename: str) -> int:
+        """Return the current number of persisted vectors for one document."""
+        try:
+            existing = self._store.get(where={"filename": filename})
+            return len(existing["ids"])
+        except Exception as error:
+            raise VectorStoreError("Unable to count document vectors.") from error
+
     def delete_chunks(self, filename: str) -> None:
         """Remove all ChromaDB records associated with one uploaded document."""
         try:

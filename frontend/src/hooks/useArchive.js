@@ -39,6 +39,11 @@ export function useArchive() {
           size_bytes: file.size,
           updated_at: new Date().toISOString(),
           chunks: response.chunks,
+          chunk_count: response.chunks,
+          category: response.category ?? 'general',
+          classifier: response.category ? 'Linear SVM' : 'fallback',
+          model_version: 'v1',
+          classification_confidence: null,
         },
         ...currentDocuments.filter((document) => document.filename !== response.filename),
       ])

@@ -16,7 +16,10 @@ function ArchiveDocumentCard({ document, isDeleting, onDelete }) {
           </svg>
         </span>
         <div className="min-w-0 flex-1">
-          <h3 className="truncate text-sm font-semibold text-[#38342f]">{document.filename}</h3>
+          <div className="flex min-w-0 items-center gap-2">
+            <h3 className="truncate text-sm font-semibold text-[#38342f]">{document.filename}</h3>
+            <span className="shrink-0 rounded-full border border-[#dcc29e] bg-[#f6ead8] px-1.5 py-0.5 text-[0.56rem] font-semibold uppercase tracking-[0.08em] text-[#96612d]">{formatCategory(document.category)}</span>
+          </div>
           <p className="mt-1 text-xs text-[#8b8175]">{documentSize} · {archiveDetail}</p>
         </div>
         <button type="button" aria-label={`Delete ${document.filename}`} disabled={isDeleting} onClick={() => onDelete(document)} className="grid size-8 shrink-0 place-items-center rounded-lg text-[#9c682f] transition hover:bg-[#f1e5d2] hover:text-[#80532b] focus:outline-none focus:ring-2 focus:ring-[#b98246] disabled:cursor-not-allowed disabled:opacity-50">
@@ -31,6 +34,12 @@ function ArchiveDocumentCard({ document, isDeleting, onDelete }) {
       </div>
     </article>
   )
+}
+
+function formatCategory(category) {
+  return typeof category === 'string' && category.length > 0
+    ? category.charAt(0).toUpperCase() + category.slice(1)
+    : 'General'
 }
 
 function formatFileSize(sizeInBytes) {

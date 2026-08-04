@@ -39,3 +39,11 @@ class OllamaUnavailableError(ConnectionError):
 
 class LLMGenerationError(RuntimeError):
     """Raised when Ollama returns an invalid or unsuccessful generation response."""
+
+
+class DocumentMetadataError(RuntimeError):
+    """Raised when uploaded-document metadata cannot be persisted."""
+
+
+class DocumentClassificationError(RuntimeError):
+    """Raised when the local ML document classifier cannot classify text."""

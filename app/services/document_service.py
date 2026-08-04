@@ -6,9 +6,14 @@ from fastapi import UploadFile
 
 from app.core.config import UPLOADS_DIRECTORY, get_uploaded_document_path
 from app.core.constants import UPLOAD_CHUNK_SIZE
-from app.core.exceptions import DocumentNotFoundError, DuplicateDocumentError, InvalidDocumentError
+from app.core.exceptions import (
+    DocumentNotFoundError,
+    DuplicateDocumentError,
+    InvalidDocumentError,
+)
 from app.core.logging import logger
 from app.langchain.vector_store import LangChainVectorStore
+from app.services.document_metadata_service import document_metadata_service
 
 
 async def save_uploaded_document(file: UploadFile) -> str:
@@ -50,5 +55,6 @@ def delete_uploaded_document(filename: str, vector_store: LangChainVectorStore) 
         raise DocumentNotFoundError("Document not found.")
 
     vector_store.delete_chunks(filename)
+    document_metadata_service.delete(filename)
     document_path.unlink()
     logger.info("Document deleted: %s", document_path.name)

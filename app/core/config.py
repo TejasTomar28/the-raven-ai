@@ -16,6 +16,9 @@ DATA_DIRECTORY = BASE_DIR / "data"
 CHROMA_DIRECTORY = DATA_DIRECTORY / "chroma"
 """Directory used by the persistent ChromaDB client."""
 
+DOCUMENT_METADATA_PATH = DATA_DIRECTORY / "document_metadata.json"
+"""Persistent JSON metadata for uploaded documents."""
+
 OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
 """Base URL of the locally running Ollama server."""
 

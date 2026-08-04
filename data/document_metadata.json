@@ -1,0 +1,42 @@
+{
+  "3.0 Digital twin basics.pdf": {
+    "category": "research",
+    "chunk_count": 85,
+    "classification_confidence": null,
+    "classifier": "Linear SVM",
+    "file_size": 4360358,
+    "filename": "3.0 Digital twin basics.pdf",
+    "model_version": "v1",
+    "uploaded_at": "2026-07-28T23:25:53.563771+00:00"
+  },
+  "Mining Unstructured Data.pdf": {
+    "category": "research",
+    "chunk_count": 32,
+    "classification_confidence": null,
+    "classifier": "Linear SVM",
+    "file_size": 1439079,
+    "filename": "Mining Unstructured Data.pdf",
+    "model_version": "v1",
+    "uploaded_at": "2026-07-29T12:59:22.084212+00:00"
+  },
+  "Tejas Tomar.pdf": {
+    "category": "resume",
+    "chunk_count": 2,
+    "classification_confidence": null,
+    "classifier": "Linear SVM",
+    "file_size": 102430,
+    "filename": "Tejas Tomar.pdf",
+    "model_version": "v1",
+    "uploaded_at": "2026-07-29T13:25:28.858101+00:00"
+  },
+  "Unit 3 Notes LR.pdf": {
+    "category": "technical",
+    "chunk_count": 1,
+    "classification_confidence": null,
+    "classifier": "Linear SVM",
+    "file_size": 3978864,
+    "filename": "Unit 3 Notes LR.pdf",
+    "model_version": "v1",
+    "uploaded_at": "2026-07-29T13:21:31.102071+00:00"
+  }
+}

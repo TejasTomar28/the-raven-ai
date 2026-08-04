@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import AnswerCard from '../components/AnswerCard'
 import ArchiveDocumentCard from '../components/ArchiveDocumentCard'
 import DeleteDocumentModal from '../components/DeleteDocumentModal'
@@ -18,6 +18,8 @@ function HomePage() {
   const [chatError, setChatError] = useState('')
   const [isGenerating, setIsGenerating] = useState(false)
   const [documentPendingDeletion, setDocumentPendingDeletion] = useState(null)
+  const [categoryFilter, setCategoryFilter] = useState('all')
+  const filteredDocuments = useMemo(() => categoryFilter === 'all' ? documents : documents.filter((document) => (document.category ?? 'general') === categoryFilter), [categoryFilter, documents])
 
   const handleAsk = async () => {
     const normalizedQuestion = question.trim()
@@ -77,15 +79,28 @@ function HomePage() {
                   <p className="text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-[#a06b32]">Collection</p>
                   <h2 className="mt-1 font-serif text-2xl text-[#332f2a]">Knowledge Archive</h2>
                 </div>
-                <span className="rounded-full border border-[#d6c3aa] bg-[#fdf9f2] px-2.5 py-1 text-[0.65rem] font-medium text-[#8b7256]">{documents.length} documents</span>
+                <span className="rounded-full border border-[#d6c3aa] bg-[#fdf9f2] px-2.5 py-1 text-[0.65rem] font-medium text-[#8b7256]">{filteredDocuments.length} documents</span>
               </div>
+              <label className="mb-3 block">
+                <span className="sr-only">Filter documents by category</span>
+                <select value={categoryFilter} onChange={(event) => setCategoryFilter(event.target.value)} className="w-full rounded-lg border border-[#d8c8b5] bg-[#fffdf8] px-3 py-2 text-xs font-medium text-[#6d6257] outline-none transition focus:border-[#b98246] focus:ring-2 focus:ring-[#d7a768]/15">
+                  <option value="all">All categories</option>
+                  <option value="finance">Finance</option>
+                  <option value="hr">HR</option>
+                  <option value="legal">Legal</option>
+                  <option value="research">Research</option>
+                  <option value="resume">Resume</option>
+                  <option value="technical">Technical</option>
+                  <option value="general">General</option>
+                </select>
+              </label>
               {archiveError && <p className="mb-3 text-xs leading-relaxed text-[#9b572e]" role="alert">{archiveError}</p>}
               {isArchiveLoading ? (
                 <p className="text-sm text-[#8b8175]">Loading archive…</p>
-              ) : documents.length > 0 ? (
-                <div className="raven-scrollbar max-h-[25.5rem] space-y-3 overflow-y-auto pr-2">{documents.map((document) => <ArchiveDocumentCard key={document.filename} document={document} isDeleting={Boolean(deletingFilename)} onDelete={setDocumentPendingDeletion} />)}</div>
+              ) : filteredDocuments.length > 0 ? (
+                <div className="raven-scrollbar max-h-[25.5rem] space-y-3 overflow-y-auto pr-2">{filteredDocuments.map((document) => <ArchiveDocumentCard key={document.filename} document={document} isDeleting={Boolean(deletingFilename)} onDelete={setDocumentPendingDeletion} />)}</div>
               ) : (
-                <p className="text-sm leading-relaxed text-[#8b8175]">Archive a PDF to begin building your knowledge base.</p>
+                <p className="text-sm leading-relaxed text-[#8b8175]">{documents.length > 0 ? 'No archived documents match this category.' : 'Archive a PDF to begin building your knowledge base.'}</p>
               )}
             </aside>
 
