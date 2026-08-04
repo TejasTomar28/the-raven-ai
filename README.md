@@ -1,172 +1,272 @@
-<div align="center">
-
 # 🐦 RAVEN AI
 
-### Enterprise Knowledge Platform powered by Retrieval-Augmented Generation (RAG)
+### Enterprise Knowledge Platform powered by Retrieval-Augmented Generation (RAG) & Machine Learning
 
-Transform PDF documents into an intelligent knowledge archive using semantic search, vector embeddings, and local Large Language Models.
+Transform PDF documents into an intelligent knowledge archive using semantic search, local Large Language Models, and offline machine learning.
 
 ![Python](https://img.shields.io/badge/Python-3.13-blue)
-![FastAPI](https://img.shields.io/badge/FastAPI-0.115-green)
-![React](https://img.shields.io/badge/React-19-61DAFB)
-![LangChain](https://img.shields.io/badge/LangChain-RAG-orange)
-![ChromaDB](https://img.shields.io/badge/ChromaDB-Vector_DB-purple)
-![Ollama](https://img.shields.io/badge/Ollama-Local_LLM-black)
-
-</div>
+![FastAPI](https://img.shields.io/badge/FastAPI-Backend-green)
+![React](https://img.shields.io/badge/React-Frontend-61DAFB)
+![LangChain](https://img.shields.io/badge/LangChain-RAG-success)
+![ChromaDB](https://img.shields.io/badge/ChromaDB-VectorDB-orange)
+![Ollama](https://img.shields.io/badge/Ollama-Local%20LLM-black)
+![Machine Learning](https://img.shields.io/badge/ML-Linear%20SVM-red)
 
 ---
 
 # 📖 Overview
 
-RAVEN AI is an enterprise-grade **Retrieval-Augmented Generation (RAG)** platform that converts PDF documents into an intelligent knowledge archive.
+RAVEN AI is an enterprise knowledge platform that enables users to upload PDF documents, organize them intelligently, and interact with them using natural language.
 
-Instead of searching documents using keywords, users can ask questions in natural language. RAVEN AI retrieves the most relevant document passages using semantic search and generates grounded responses using a locally running Large Language Model.
+Instead of relying on keyword search, RAVEN AI combines:
 
-Every answer is backed by the retrieved source passages, improving transparency and reducing hallucinations.
+- Retrieval-Augmented Generation (RAG)
+- Semantic Search
+- Local Large Language Models (Ollama + Qwen)
+- Offline Machine Learning
+
+to deliver grounded, citation-backed answers while automatically classifying uploaded documents into enterprise document categories.
+
+Unlike traditional chatbots, every answer is generated only after retrieving relevant document passages from the knowledge base.
 
 ---
 
 # ✨ Features
 
-## Document Management
+## 📄 Intelligent Document Processing
 
 - Upload PDF documents
-- Automatic document parsing
+- Automatic PDF parsing
 - Intelligent text chunking
-- Persistent vector indexing
+- Semantic vector indexing
+- Persistent ChromaDB storage
+- Automatic document categorization
 - Knowledge archive
-- Delete uploaded documents
+- Delete documents
 - Automatic vector cleanup
 
 ---
 
-## AI-Powered Question Answering
+## 🤖 AI-Powered Question Answering
 
-- Semantic retrieval using embeddings
-- Context-aware answers
 - Retrieval-Augmented Generation (RAG)
-- Local LLM using Ollama
-- Grounded responses
-- Source passage citations
+- Semantic Search
+- Local Ollama (Qwen 3)
+- LangChain Retrieval Pipeline
+- Context-aware grounded responses
+- Source citations
 - Similarity-based retrieval
+- Hallucination-resistant responses
 
 ---
 
-## User Experience
+## 🧠 Machine Learning Document Classification
 
-- Modern React interface
-- Enterprise-inspired archive theme
-- Scrollable knowledge archive
-- Scrollable citation panel
+Every uploaded document is automatically classified using an offline supervised Machine Learning pipeline.
+
+Categories:
+
+- Finance
+- HR
+- Legal
+- Research
+- Resume
+- Technical
+
+Pipeline:
+
+PDF
+
+↓
+
+Extract Text
+
+↓
+
+Preprocess Text
+
+↓
+
+TF-IDF Vectorization
+
+↓
+
+Linear SVM
+
+↓
+
+Category Prediction
+
+The classifier runs completely offline without any LLM.
+
+---
+
+## 🎨 Modern User Experience
+
+- React + Tailwind UI
+- Enterprise archive theme
+- Category badges
+- Archive filtering
+- Scrollable archive
+- Scrollable citations
 - Loading indicators
 - Error handling
-- Responsive layout
 - Confirmation dialogs
+- Responsive layout
 
 ---
 
 # 🖼 Screenshots
 
-## Home Interface
+## Home
 
-> <img width="2888" height="1604" alt="image" src="https://github.com/user-attachments/assets/bea53e42-785d-480b-a025-93843ad0aa6d" />
+> <img width="2602" height="1514" alt="image" src="https://github.com/user-attachments/assets/fb73a0dc-d905-4fd3-95eb-f651f5606429" />
 
 
 ---
 
-## Upload Documents
+## Delete Document
 
-> <img width="2850" height="1534" alt="image" src="https://github.com/user-attachments/assets/a1a0e2a3-1489-42d5-b33d-535c612369cb" />
+> <img width="2940" height="1606" alt="image" src="https://github.com/user-attachments/assets/e5cb9a8f-ea4b-4616-a4b5-8cf60d754060" />
 
 
 ---
 
 ## Ask Questions
 
-> <img width="2826" height="1602" alt="image" src="https://github.com/user-attachments/assets/540dd0ba-31d1-43e4-a008-ed43bfe80781" />
+> <img width="2936" height="1610" alt="image" src="https://github.com/user-attachments/assets/40ef389c-d299-44b5-814f-fd29059a8326" />
 
 
 ---
 
-## Grounded Response
+## Document Classification
 
-> <img width="1762" height="982" alt="image" src="https://github.com/user-attachments/assets/dfb91c04-a5fe-42d9-9b64-3d151fa3ee89" />
+> <img width="1024" height="1300" alt="image" src="https://github.com/user-attachments/assets/65f7d122-2a4e-40c5-a3b0-4b4bf63ad428" />
+
+
+---
+
+## Citation-backed Response
+
+> <img width="1848" height="720" alt="image" src="https://github.com/user-attachments/assets/b6fc4b5b-b491-473b-ba2c-287c6f0b3a1f" />
 
 
 ---
 
 # 🏗 System Architecture
 
-```
-                ┌────────────────────┐
-                │    React Frontend  │
-                └─────────┬──────────┘
-                          │
-                  REST API Calls
-                          │
-                ┌─────────▼──────────┐
-                │      FastAPI       │
-                └─────────┬──────────┘
-                          │
-        ┌─────────────────┼─────────────────┐
-        │                 │                 │
-        ▼                 ▼                 ▼
- PDF Processing     LangChain RAG     Document APIs
-        │                 │
-        ▼                 ▼
- Text Chunking      Semantic Retrieval
-        │                 │
-        ▼                 ▼
- Embeddings       ChatOllama (LLM)
-        │                 │
-        └─────────┬───────┘
-                  ▼
-             ChromaDB
-          Vector Database
+```text
+                    React Frontend
+                           │
+                           ▼
+                    FastAPI Backend
+                           │
+      ┌────────────────────┼────────────────────┐
+      │                    │                    │
+      ▼                    ▼                    ▼
+PDF Processing      LangChain RAG        ML Classifier
+      │                    │                    │
+      ▼                    ▼                    ▼
+Text Extraction     Semantic Search      TF-IDF + SVM
+      │                    │
+      ▼                    ▼
+Chunking          ChatOllama (Qwen)
+      │                    │
+      └────────────┬───────┘
+                   ▼
+              ChromaDB
+            Vector Database
 ```
 
 ---
 
 # 🧠 RAG Pipeline
 
+```text
+Upload PDF
+      │
+      ▼
+Extract Text
+      │
+      ▼
+Chunk Document
+      │
+      ▼
+Generate Embeddings
+      │
+      ▼
+Store in ChromaDB
+
+──────────────────────────────
+
+User Question
+      │
+      ▼
+Generate Query Embedding
+      │
+      ▼
+Retrieve Relevant Chunks
+      │
+      ▼
+Build Context
+      │
+      ▼
+LangChain + Ollama
+      │
+      ▼
+Grounded Response
+      │
+      ▼
+Supporting Citations
 ```
-                Upload PDF
-                     │
-                     ▼
-            Extract Document Text
-                     │
-                     ▼
-              Chunk Document
-                     │
-                     ▼
-         Generate Embeddings
-                     │
-                     ▼
-      Store Vectors in ChromaDB
-                     │
-──────────────────────────────────────────────
-                     │
-                User Question
-                     │
-                     ▼
-        Generate Question Embedding
-                     │
-                     ▼
-      Retrieve Relevant Chunks
-                     │
-                     ▼
-        Build Context Prompt
-                     │
-                     ▼
-     LangChain + Ollama (LLM)
-                     │
-                     ▼
-      Grounded AI Response
-                     │
-                     ▼
-    Return Supporting Citations
+
+---
+
+# 🤖 ML Classification Pipeline
+
+```text
+Upload PDF
+      │
+      ▼
+Extract Text
+      │
+      ▼
+Text Preprocessing
+      │
+      ▼
+TF-IDF Vectorizer
+      │
+      ▼
+Linear SVM
+      │
+      ▼
+Predicted Category
+      │
+      ▼
+Store Metadata
+      │
+      ▼
+Display Category Badge
 ```
+
+---
+
+# 📊 Model Evaluation
+
+Three supervised machine learning models were evaluated.
+
+| Model | Validation Accuracy | Validation Weighted F1 |
+|--------|--------------------:|-----------------------:|
+| Logistic Regression | 97.7% | 97.7% |
+| **Linear SVM** | **100%** | **100%** |
+| XGBoost | 90.7% | 90.6% |
+
+Final untouched hold-out test performance:
+
+- Accuracy: **93.8%**
+- Weighted F1 Score: **93.3%**
+
+Linear SVM was selected as the production classifier because it generalized best on sparse TF-IDF document features.
 
 ---
 
@@ -179,7 +279,7 @@ Every answer is backed by the retrieved source passages, improving transparency 
 - LangChain
 - ChromaDB
 - Ollama
-- PyPDF
+- PyMuPDF
 - Uvicorn
 
 ---
@@ -192,43 +292,38 @@ Every answer is backed by the retrieved source passages, improving transparency 
 
 ---
 
-## AI Stack
+## AI
 
 - LangChain
 - Ollama
-- Qwen 3 (Local LLM)
+- Qwen 3
 - ChromaDB
 - Sentence Transformers
 
 ---
 
+## Machine Learning
+
+- Scikit-learn
+- Linear SVM
+- TF-IDF
+- Joblib
+
+---
+
 # 📂 Project Structure
 
-```
+```text
 the-raven-ai/
-│
+
 ├── app/
-│   ├── api/
-│   ├── core/
-│   ├── langchain/
-│   ├── models/
-│   ├── rag/
-│   ├── schemas/
-│   ├── services/
-│   ├── utils/
-│   └── main.py
-│
 ├── frontend/
-│   ├── src/
-│   │   ├── components/
-│   │   ├── hooks/
-│   │   ├── layouts/
-│   │   ├── pages/
-│   │   ├── services/
-│   │   ├── styles/
-│   │   └── utils/
-│   │
-│   └── package.json
+├── ml/
+│   ├── models/
+│   ├── scripts/
+│   ├── train.py
+│   ├── evaluate.py
+│   └── predict.py
 │
 ├── uploads/
 ├── data/
@@ -243,87 +338,56 @@ the-raven-ai/
 ## Documents
 
 | Method | Endpoint | Description |
-|----------|----------|-------------|
-| POST | `/documents/upload` | Upload PDF |
-| GET | `/documents` | List uploaded documents |
-| DELETE | `/documents/{filename}` | Delete document |
-| POST | `/documents/search` | Semantic search |
-| GET | `/documents/{filename}/text` | Extracted text |
-| GET | `/documents/{filename}/chunks` | Document chunks |
+|--------|----------|-------------|
+| POST | /documents/upload | Upload document |
+| GET | /documents | List documents |
+| DELETE | /documents/{filename} | Delete document |
+| POST | /documents/search | Semantic search |
 
 ---
 
 ## Chat
 
 | Method | Endpoint | Description |
-|----------|----------|-------------|
-| POST | `/chat` | Ask questions using RAG |
+|--------|----------|-------------|
+| POST | /chat | Ask questions |
 
 ---
 
 # 🚀 Getting Started
 
-## 1. Clone Repository
+## Clone
 
 ```bash
 git clone https://github.com/TejasTomar28/the-raven-ai.git
-
 cd the-raven-ai
 ```
 
 ---
 
-## 2. Backend Setup
-
-Create virtual environment
+## Backend
 
 ```bash
 python -m venv .venv
-```
 
-Activate
-
-### Windows
-
-```bash
-.venv\Scripts\activate
-```
-
-### macOS / Linux
-
-```bash
 source .venv/bin/activate
-```
 
-Install dependencies
-
-```bash
 pip install -r requirements.txt
 ```
 
 ---
 
-## 3. Install Ollama
-
-Install Ollama
-
-https://ollama.com
-
-Pull the model
+## Install Ollama
 
 ```bash
 ollama pull qwen3:4b
-```
 
-Start Ollama
-
-```bash
 ollama serve
 ```
 
 ---
 
-## 4. Frontend Setup
+## Frontend
 
 ```bash
 cd frontend
@@ -335,13 +399,13 @@ npm run dev
 
 ---
 
-## 5. Run Backend
+## Backend
 
 ```bash
 uvicorn app.main:app --reload
 ```
 
-Swagger UI
+Swagger:
 
 ```
 http://localhost:8000/docs
@@ -349,41 +413,43 @@ http://localhost:8000/docs
 
 ---
 
-# 💡 Example Workflow
+# 💡 End-to-End Workflow
 
-1. Upload PDF documents
-
-↓
-
-2. Documents are parsed and chunked
+```text
+Upload PDF
 
 ↓
 
-3. Embeddings are generated
+Extract Text
 
 ↓
 
-4. Chunks are stored inside ChromaDB
+ML Classification
 
 ↓
 
-5. Ask questions in natural language
+Generate Embeddings
 
 ↓
 
-6. Relevant chunks are retrieved
+Store Chunks in ChromaDB
 
 ↓
 
-7. LangChain sends context to Ollama
+Ask Question
 
 ↓
 
-8. Receive grounded AI response
+Retrieve Relevant Chunks
 
 ↓
 
-9. Inspect supporting source passages
+Generate Grounded Answer
+
+↓
+
+Display Supporting Citations
+```
 
 ---
 
@@ -391,26 +457,27 @@ http://localhost:8000/docs
 
 Unlike traditional chatbots, RAVEN AI does not rely solely on the LLM's internal knowledge.
 
-Instead, it retrieves relevant document passages before generating an answer, making responses:
+Instead, it retrieves relevant document passages before generating an answer.
 
-- More accurate
-- Explainable
-- Grounded in uploaded documents
-- Less prone to hallucinations
+Benefits:
+
+- Grounded responses
+- Explainable citations
+- Reduced hallucinations
+- Enterprise-ready knowledge retrieval
 
 ---
 
 # 🔮 Future Improvements
 
-- Document classification
-- Category-based archive
-- Authentication & user accounts
-- Multi-user knowledge spaces
-- Streaming AI responses
-- Hybrid keyword + semantic search
-- Cloud deployment
+- Multi-user workspaces
+- Authentication & Authorization
+- Streaming responses
+- Hybrid keyword + semantic retrieval
+- OCR support for scanned PDFs
 - Docker Compose
 - Kubernetes deployment
+- Cloud deployment
 - Role-based access control
 
 ---
@@ -419,9 +486,9 @@ Instead, it retrieves relevant document passages before generating an answer, ma
 
 **Tejas Tomar**
 
-Software Engineering Student  
+Software Engineering Student
+
 Delhi Technological University (DTU)
 
-Backend Development • Artificial Intelligence • Distributed Systems
-
+Backend Development • Artificial Intelligence • Machine Learning • Distributed Systems
 
