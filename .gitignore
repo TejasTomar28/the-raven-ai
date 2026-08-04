@@ -38,3 +38,10 @@ uploads/
 
 # macOS
 .DS_Store
+
+# Local ML training dataset
+ml/dataset/
+
+# Python cache
+__pycache__/
+*.py[cod]
